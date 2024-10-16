@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="C:\Users\HP\OneDrive\Desktop\( HTTP ) Hyper Text Transfer Protocol\Wikipedia Application\Wikipedia Application.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous" />
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/5f59ca6ad3.js" crossorigin="anonymous"></script>
+
+  </head>
+  <body>
+<div class="main-container">
+    <div class="wiki-search-header text-center">
+      <img class="wiki-logo" src="https://nkb-backend-otg-media-static.s3.ap-south-1.amazonaws.com/ccbp-dynamic-webapps/wiki-logo-img.png" />
+    
+      <h1 class="heading text-center">Lee Browser</h1>
+      
+      <input placeholder="Type a keyword and press Enter to search" type="search" class="search-input w-100" id="searchInput" />
+    </div>
+    <div class="d-none" id="spinner">
+      <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+
+  <script>
+    let searchInputEl = document.getElementById("searchInput");
+    let searchResultsEl = document.getElementById("searchResults");
+    let spinnerEl = document.getElementById("spinner");
+
+function createAndAppendSearchResult(result){
+    let {title,link,description} = result;
+    //create div container to placeed the result items...Like  title card and some of links
+    let resultDivContainerEl = document.createElement("div");
+    resultDivContainerEl.classList.add("result-items");
+    searchResultsEl.appendChild(resultDivContainerEl);
+    
+    //To create ancor Element for result title...
+    let resultTitleAnchorEl = document.createElement("a");
+    resultTitleAnchorEl.classList.add("result-title");
+    resultTitleAnchorEl.textContent = title;
+    resultTitleAnchorEl.href = link;
+    resultTitleAnchorEl.target = "_blank";//---> To give a _blank it will display's another tab..
+    searchResultsEl.appendChild(resultTitleAnchorEl);
+    
+    //Then after this code we wants some breake for the next line 
+    let titleBreakEl = document.createElement("br");
+    searchResultsEl.appendChild(titleBreakEl);
+    
+    //Then we Need The URL for result-url
+    let resultUrlEl = document.createElement("a");
+    resultUrlEl.classList.add("result-url");
+    resultUrlEl.href = link;
+    resultUrlEl.target = "_blank";//---> To give a _blank it will display's another tab..
+    resultUrlEl.textContent = link;
+    searchResultsEl.appendChild(resultUrlEl);
+    
+    //Here we need the line break....
+    let lineBreak = document.createElement("br");
+    searchResultsEl.appendChild(lineBreak);
+    
+    //then we need the Pharagraph description for title-description...
+    let descriptionEl = document.createElement("p");
+    descriptionEl.classList.add("title-description");
+    descriptionEl.textContent = description;
+    descriptionEl.target = "_blank";//---> To give a _blank it will display's another tab..
+    searchResultsEl.appendChild(descriptionEl);
+}
+
+
+function displayResults(searchResults){
+    spinnerEl.classList.toggle("d-none");
+    for(let result of searchResults){
+    createAndAppendSearchResult(result);
+}
+}
+
+function serachwikipedia(event){
+    if(event.key === "Enter"){
+        searchResultsEl.textContent = "";
+        spinnerEl.classList.toggle("d-none");
+        let searchInputValue = searchInputEl.value;
+        let url = "https://apis.ccbp.in/wiki-search?search=" + searchInputValue;
+         
+        let options = {
+            method : "GET"
+        }
+        fetch(url,options)
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(jsonData){
+            
+           let {search_results} = jsonData;
+           displayResults(search_results);
+        });
+      
+    
+        searchInputEl.value = "";
+    }
+}
+
+searchInputEl.addEventListener("keydown",serachwikipedia);
+
+  </script>
+  </body>
+</html>
